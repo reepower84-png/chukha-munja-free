@@ -1,6 +1,6 @@
 {
-    "name": "축하 초대장 - 무료 축하 문자 발송",
-    "short_name": "축하초대장",
+    "name": "축하 알림 - 무료 축하 초대장 발송",
+    "short_name": "축하 알림",
     "description": "결혼식, 돌잔치, 회갑, 칠순, 개업 등 축하 초대장을 무료로 발송하세요",
     "start_url": "./index.html",
     "display": "standalone",
