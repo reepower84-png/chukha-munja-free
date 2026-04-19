@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>축하 초대장 - 관리자</title>
+    <style>
+        :root {
+            --primary: #ff6b9d;
+            --primary-dark: #e85488;
+            --accent: #f0a500;
+            --bg: #fff9fb;
+            --bg-card: #ffffff;
+            --bg-soft: #fff1f5;
+            --text: #3d2b3e;
+            --text-light: #7a6572;
+            --border: #ffe0ea;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        #loginScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            gap: 16px;
+        }
+
+        #loginScreen h1 {
+            font-size: 22px;
+            color: var(--primary-dark);
+        }
+
+        #loginScreen input {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            width: 280px;
+            text-align: center;
+        }
+
+        #loginScreen button {
+            padding: 12px 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(255,107,157,0.3);
+        }
+
+        #loginScreen .error {
+            color: var(--primary-dark);
+            font-size: 13px;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(255,107,157,0.25);
+        }
+
+        .admin-header h1 {
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .admin-header button {
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(255,107,157,0.25);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(255,107,157,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(255,107,157,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h3 {
+            font-size: 15px;
+            color: var(--primary-dark);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-blue { background: #e8f0fe; color: #1a73e8; }
+        .badge-green { background: #e6f4ea; color: #137333; }
+        .badge-orange { background: #fef3e0; color: #e65100; }
+        .badge-pink { background: #fff1f5; color: var(--primary-dark); }
+
+        .event-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            background: var(--bg-soft);
+            color: var(--primary-dark);
+            border: 1px solid var(--border);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-light);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--bg-soft);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tr:hover td { background: #fffafc; }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-light);
+            padding: 40px 0;
+            font-size: 14px;
+        }
+
+        .celebration-item {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .celebration-name {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .celebration-date { font-size: 12px; color: var(--text-light); }
+        .celebration-id { font-size: 11px; color: var(--accent); font-family: monospace; }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .price { font-weight: 700; color: #e65100; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .wreath-order-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .wreath-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wreath-order-date { font-size: 12px; color: var(--text-light); }
+
+        .wreath-order-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .wreath-detail-table { width: 100%; }
+
+        .wreath-detail-table th {
+            width: 100px;
+            font-size: 12px;
+            padding: 6px 8px;
+            background: var(--bg-soft);
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            vertical-align: top;
+        }
+
+        .wreath-detail-table td {
+            font-size: 13px;
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .wreath-total-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-soft);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 8px;
+            font-size: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .status-select {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .status-select.status-접수중 { background: #fff3e0; color: #e65100; border-color: #ffcc80; }
+        .status-select.status-접수완료 { background: #e8f0fe; color: #1a73e8; border-color: #90caf9; }
+        .status-select.status-배송중 { background: #fce4ec; color: #c62828; border-color: #ef9a9a; }
+        .status-select.status-배송완료 { background: #e6f4ea; color: #137333; border-color: #a5d6a7; }
+
+        .delete-btn {
+            padding: 4px 10px;
+            background: #fff;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover { background: #ffebee; }
+
+        @media (max-width: 480px) {
+            .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stat-card .number { font-size: 22px; }
+            .stat-card .label { font-size: 11px; }
+            table { font-size: 12px; }
+            th, td { padding: 8px; }
+            .tabs { gap: 4px; }
+            .tab { font-size: 12px; padding: 10px 6px; }
+            .filter-row { gap: 6px; }
+            .filter-btn { padding: 5px 10px; font-size: 11px; }
+            .admin-header { padding: 14px; }
+            .admin-header h1 { font-size: 15px; }
+            .container { padding: 12px 10px; }
+        }
+
+        @media (max-width: 380px) {
+            .stat-card .number { font-size: 18px; }
+            .filter-btn { padding: 5px 8px; font-size: 10px; }
+            .event-type-badge { font-size: 9px; padding: 2px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 로그인 화면 -->
+        <div id="loginScreen">
+            <h1>🎉 관리자 로그인</h1>
+            <input type="password" id="adminPw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') adminLogin()">
+            <button onclick="adminLogin()">로그인</button>
+            <div id="loginError" class="error"></div>
+        </div>
+
+        <!-- 관리자 대시보드 -->
+        <div id="adminDashboard" style="display:none;">
+            <div class="admin-header">
+                <h1>🎉 축하 초대장 관리자</h1>
+                <div style="display:flex; gap:6px;">
+                    <button onclick="location.reload();">🔄 새로고침</button>
+                    <button onclick="adminLogout()">로그아웃</button>
+                </div>
+            </div>
+
+            <!-- 통계 -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="number" id="statCelebrations">-</div>
+                    <div class="label">전체 초대장</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="statWreaths">-</div>
+                    <div class="label">화환 접수</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="statMessages">-</div>
+                    <div class="label">축하 메시지</div>
+                </div>
+            </div>
+
+            <!-- 초대장 목록 -->
+            <div id="celebrationListView">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>초대장 목록</h3>
+                    </div>
+                    <div class="filter-row">
+                        <button class="filter-btn active" data-filter="all" onclick="filterList('all', this)">전체</button>
+                        <button class="filter-btn" data-filter="wedding" onclick="filterList('wedding', this)">💍 결혼식</button>
+                        <button class="filter-btn" data-filter="dol" onclick="filterList('dol', this)">🎂 돌잔치</button>
+                        <button class="filter-btn" data-filter="hwangap" onclick="filterList('hwangap', this)">🎊 회갑</button>
+                        <button class="filter-btn" data-filter="chilsun" onclick="filterList('chilsun', this)">🌸 칠순</button>
+                        <button class="filter-btn" data-filter="palsun" onclick="filterList('palsun', this)">🌺 팔순</button>
+                        <button class="filter-btn" data-filter="opening" onclick="filterList('opening', this)">🎀 개업</button>
+                    </div>
+                    <div id="celebrationList" class="table-wrap">
+                        <div class="loading">불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 초대장 상세 -->
+            <div id="celebrationDetailView" style="display:none;">
+                <button class="back-btn" onclick="showCelebrationList()">← 목록으로</button>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 id="detailTitle">초대장 정보</h3>
+                    </div>
+                    <div id="detailInfo"></div>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('wreaths', this)">💐 화환 접수</div>
+                    <div class="tab" onclick="switchTab('messages', this)">🎉 축하 메시지</div>
+                </div>
+
+                <div id="wreathsTab" class="card">
+                    <div id="wreathList" class="table-wrap">
+                        <div class="loading">불러오는 중...</div>
+                    </div>
+                </div>
+
+                <div id="messagesTab" class="card" style="display:none;">
+                    <div id="messageList" class="table-wrap">
+                        <div class="loading">불러오는 중...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        // ===== 관리자 비밀번호 =====
+        const ADMIN_PASSWORD = 'chukha2026!';
+
+        // ===== 이벤트 타입 매핑 =====
+        const TYPE_INFO = {
+            wedding: { label: '💍 결혼식', color: '#ff6b9d' },
+            dol: { label: '🎂 돌잔치', color: '#ffa1c0' },
+            hwangap: { label: '🎊 회갑', color: '#f0a500' },
+            chilsun: { label: '🌸 칠순', color: '#ff8fab' },
+            palsun: { label: '🌺 팔순', color: '#e85488' },
+            opening: { label: '🎀 개업', color: '#8ec5ff' }
+        };
+
+        // ===== 로그인 =====
+        function adminLogin() {
+            const pw = document.getElementById('adminPw').value;
+            if (pw === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminAuth', 'true');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadCelebrations();
+                processNotifications();
+            } else {
+                document.getElementById('loginError').textContent = '비밀번호가 올바르지 않습니다.';
+            }
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem('adminAuth');
+            location.reload();
+        }
+
+        if (sessionStorage.getItem('adminAuth') === 'true') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadCelebrations();
+            processNotifications();
+        }
+
+        // ===== 이벤트 타입별 헤드라인 =====
+        function getHeadline(d) {
+            const type = d.eventType || 'wedding';
+            if (type === 'wedding') {
+                const gr = d.groomRelation ? `${d.groomRelation} ` : '';
+                const br = d.brideRelation ? `${d.brideRelation} ` : '';
+                return `${gr}${d.groomName || ''} ♥ ${br}${d.brideName || ''}`;
+            }
+            if (type === 'dol') return `${d.babyName || ''} ${d.babyGender ? '(' + d.babyGender + ')' : ''}`;
+            if (type === 'hwangap' || type === 'chilsun' || type === 'palsun') {
+                const label = type === 'hwangap' ? '회갑' : type === 'chilsun' ? '칠순' : '팔순';
+                return `${d.elderName || ''} ${d.elderGender || ''} (${label})`;
+            }
+            if (type === 'opening') return `${d.shopName || ''} (${d.shopType || '개업'})`;
+            return '-';
+        }
+
+        // ===== 초대장 목록 =====
+        let allCelebrations = [];
+        let currentFilter = 'all';
+        let totalWreaths = 0;
+        let totalMessages = 0;
+
+        async function loadCelebrations() {
+            const snapshot = await db.collection(COLLECTION_NAME)
+                .orderBy('createdAt', 'desc')
+                .get();
+
+            allCelebrations = [];
+            totalWreaths = 0;
+            totalMessages = 0;
+
+            for (const doc of snapshot.docs) {
+                const data = doc.data();
+                data.id = doc.id;
+
+                const wreathSnap = await db.collection(COLLECTION_NAME).doc(doc.id).collection('wreaths').get();
+                const messageSnap = await db.collection(COLLECTION_NAME).doc(doc.id).collection('messages').get();
+                data.wreathCount = wreathSnap.size;
+                data.messageCount = messageSnap.size;
+
+                totalWreaths += data.wreathCount;
+                totalMessages += data.messageCount;
+
+                allCelebrations.push(data);
+            }
+
+            document.getElementById('statCelebrations').textContent = allCelebrations.length;
+            document.getElementById('statWreaths').textContent = totalWreaths;
+            document.getElementById('statMessages').textContent = totalMessages;
+
+            renderCelebrationList();
+        }
+
+        function filterList(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCelebrationList();
+        }
+
+        function renderCelebrationList() {
+            const el = document.getElementById('celebrationList');
+
+            const filtered = currentFilter === 'all'
+                ? allCelebrations
+                : allCelebrations.filter(c => c.eventType === currentFilter);
+
+            if (filtered.length === 0) {
+                el.innerHTML = '<div class="no-data">등록된 초대장이 없습니다.</div>';
+                return;
+            }
+
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>종류</th>
+                        <th>주인공</th>
+                        <th>장소</th>
+                        <th>일시</th>
+                        <th>화환</th>
+                        <th>메시지</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            filtered.forEach(c => {
+                const info = TYPE_INFO[c.eventType] || { label: '-' };
+                const date = c.eventDate || '-';
+                const time = c.eventTime || '';
+                const headline = getHeadline(c);
+                const venue = `${c.venueName || '-'} ${c.venueRoom || ''}`.trim();
+                html += `
+                    <tr class="celebration-item">
+                        <td onclick="showCelebrationDetail('${c.id}')" style="cursor:pointer;">
+                            <span class="event-type-badge">${info.label}</span>
+                        </td>
+                        <td onclick="showCelebrationDetail('${c.id}')" style="cursor:pointer;">
+                            <div class="celebration-name">${escapeHtml(headline)}</div>
+                            <div class="celebration-id">${c.id}</div>
+                        </td>
+                        <td onclick="showCelebrationDetail('${c.id}')" style="cursor:pointer;">${escapeHtml(venue)}</td>
+                        <td onclick="showCelebrationDetail('${c.id}')" style="cursor:pointer;"><div class="celebration-date">${date} ${time}</div></td>
+                        <td><span class="badge badge-orange">${c.wreathCount}</span></td>
+                        <td><span class="badge badge-pink">${c.messageCount}</span></td>
+                        <td><button class="delete-btn" onclick="deleteCelebration('${c.id}')">삭제</button></td>
+                    </tr>`;
+            });
+
+            html += '</tbody></table>';
+            el.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== 상세 =====
+        async function showCelebrationDetail(id) {
+            document.getElementById('celebrationListView').style.display = 'none';
+            document.getElementById('celebrationDetailView').style.display = 'block';
+
+            const c = allCelebrations.find(x => x.id === id);
+            if (!c) return;
+
+            const info = TYPE_INFO[c.eventType] || { label: '-' };
+            document.getElementById('detailTitle').innerHTML = `${info.label} - ${escapeHtml(getHeadline(c))}`;
+
+            const accounts = (c.accounts || []).map(a => {
+                const rel = a.relation ? `[${escapeHtml(a.relation)}] ` : '';
+                return `${rel}${escapeHtml(a.holder)} · ${escapeHtml(a.bank)} ${escapeHtml(a.number)}`;
+            }).join('<br>');
+
+            let typeSpecific = '';
+            if (c.eventType === 'wedding') {
+                typeSpecific = `
+                    <tr><th>신랑</th><td>${escapeHtml(c.groomName || '-')} ${c.groomRelation ? '(' + c.groomRelation + ')' : ''}</td></tr>
+                    <tr><th>신부</th><td>${escapeHtml(c.brideName || '-')} ${c.brideRelation ? '(' + c.brideRelation + ')' : ''}</td></tr>
+                    ${c.groomParents ? `<tr><th>신랑측 혼주</th><td>${escapeHtml(c.groomParents)}</td></tr>` : ''}
+                    ${c.brideParents ? `<tr><th>신부측 혼주</th><td>${escapeHtml(c.brideParents)}</td></tr>` : ''}
+                `;
+            } else if (c.eventType === 'dol') {
+                typeSpecific = `
+                    <tr><th>아기 성함</th><td>${escapeHtml(c.babyName || '-')} ${c.babyGender ? '(' + c.babyGender + ')' : ''}</td></tr>
+                    ${c.babyBirth ? `<tr><th>생년월일</th><td>${c.babyBirth}</td></tr>` : ''}
+                    ${c.dolFather || c.dolMother ? `<tr><th>부모</th><td>${escapeHtml(c.dolFather || '')} / ${escapeHtml(c.dolMother || '')}</td></tr>` : ''}
+                `;
+            } else if (c.eventType === 'hwangap' || c.eventType === 'chilsun' || c.eventType === 'palsun') {
+                const lbl = c.eventType === 'hwangap' ? '회갑' : c.eventType === 'chilsun' ? '칠순' : '팔순';
+                typeSpecific = `
+                    <tr><th>주인공</th><td>${escapeHtml(c.elderName || '-')} ${c.elderGender ? '(' + c.elderGender + ')' : ''} - ${lbl}</td></tr>
+                    ${c.elderAge ? `<tr><th>연세</th><td>${escapeHtml(c.elderAge)}</td></tr>` : ''}
+                    ${c.elderHosts ? `<tr><th>모시는 자녀</th><td>${escapeHtml(c.elderHosts)}</td></tr>` : ''}
+                `;
+            } else if (c.eventType === 'opening') {
+                typeSpecific = `
+                    <tr><th>상호</th><td>${escapeHtml(c.shopName || '-')}</td></tr>
+                    ${c.shopCeo ? `<tr><th>대표</th><td>${escapeHtml(c.shopCeo)}</td></tr>` : ''}
+                    ${c.shopType ? `<tr><th>업종</th><td>${escapeHtml(c.shopType)}</td></tr>` : ''}
+                `;
+            }
+
+            document.getElementById('detailInfo').innerHTML = `
+                <table>
+                    <tr><th style="width:100px">종류</th><td>${info.label}</td></tr>
+                    ${typeSpecific}
+                    <tr><th>장소</th><td>${escapeHtml(c.venueName || '-')} ${escapeHtml(c.venueRoom || '')}</td></tr>
+                    <tr><th>일시</th><td>${c.eventDate || '-'} ${c.eventTime || ''}</td></tr>
+                    <tr><th>주소</th><td>${escapeHtml(c.venueAddress || '-')}</td></tr>
+                    <tr><th>연락처</th><td>${escapeHtml(c.venuePhone || '-')}</td></tr>
+                    ${c.afterParty ? `<tr><th>피로연</th><td>${escapeHtml(c.afterParty)}</td></tr>` : ''}
+                    ${c.additionalMessage ? `<tr><th>메시지</th><td style="white-space:pre-line;">${escapeHtml(c.additionalMessage)}</td></tr>` : ''}
+                    ${accounts ? `<tr><th>계좌</th><td>${accounts}</td></tr>` : ''}
+                    <tr><th>초대장 링크</th><td><a href="index.html?id=${c.id}" target="_blank" style="color:var(--primary-dark); font-weight:700;">열기</a></td></tr>
+                </table>
+            `;
+
+            loadWreaths(c.id);
+            loadMessages(c.id);
+        }
+
+        function showCelebrationList() {
+            document.getElementById('celebrationListView').style.display = 'block';
+            document.getElementById('celebrationDetailView').style.display = 'none';
+        }
+
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('wreathsTab').style.display = tab === 'wreaths' ? 'block' : 'none';
+            document.getElementById('messagesTab').style.display = tab === 'messages' ? 'block' : 'none';
+        }
+
+        // ===== 화환 목록 =====
+        let currentCelebrationId = null;
+
+        async function loadWreaths(celebrationId) {
+            currentCelebrationId = celebrationId;
+            const el = document.getElementById('wreathList');
+            el.innerHTML = '<div class="loading">불러오는 중...</div>';
+
+            const snapshot = await db.collection(COLLECTION_NAME).doc(celebrationId)
+                .collection('wreaths')
+                .orderBy('createdAt', 'desc')
+                .get();
+
+            if (snapshot.empty) {
+                el.innerHTML = '<div class="no-data">접수된 화환이 없습니다.</div>';
+                return;
+            }
+
+            let totalPrice = 0;
+            let html = '';
+
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                const price = d.price || 0;
+                totalPrice += price;
+                const date = d.createdAt ? formatDate(d.createdAt.toDate()) : '-';
+                const status = d.status || '접수중';
+                let receiptText = '신청안함';
+                if (d.receipt) {
+                    if (d.receipt.type === 'cash') {
+                        receiptText = '현금영수증<br>연락처: ' + (d.receipt.phone || '-');
+                    } else if (d.receipt.type === 'tax') {
+                        receiptText = '세금계산서'
+                            + '<br>이메일: ' + (d.receipt.email || '-')
+                            + '<br>상호: ' + (d.receipt.company || '-')
+                            + '<br>대표자명: ' + (d.receipt.ceo || '-')
+                            + '<br>사업자번호: ' + (d.receipt.bizNo || '-')
+                            + '<br>소재지: ' + (d.receipt.addr || '-')
+                            + '<br>업태: ' + (d.receipt.bizType || '-')
+                            + '<br>종목: ' + (d.receipt.bizItem || '-');
+                    }
+                }
+
+                html += `
+                    <div class="wreath-order-card">
+                        <div class="wreath-order-header">
+                            <span class="wreath-order-date">${date}</span>
+                            <div class="wreath-order-actions">
+                                <select class="status-select status-${status}" onchange="updateWreathStatus('${celebrationId}', '${doc.id}', this.value, this)">
+                                    <option value="접수중" ${status === '접수중' ? 'selected' : ''}>접수중</option>
+                                    <option value="접수완료" ${status === '접수완료' ? 'selected' : ''}>접수완료</option>
+                                    <option value="배송중" ${status === '배송중' ? 'selected' : ''}>배송중</option>
+                                    <option value="배송완료" ${status === '배송완료' ? 'selected' : ''}>배송완료</option>
+                                </select>
+                                <button class="delete-btn" onclick="deleteWreath('${celebrationId}', '${doc.id}')">삭제</button>
+                            </div>
+                        </div>
+                        <table class="wreath-detail-table">
+                            <tr><th>화환</th><td><strong>${escapeHtml(d.wreath || '-')}</strong></td></tr>
+                            <tr><th>금액</th><td class="price">${price.toLocaleString()}원</td></tr>
+                            <tr><th>주문자</th><td>${escapeHtml(d.orderName || '-')}</td></tr>
+                            <tr><th>주문자 연락처</th><td>${escapeHtml(d.orderPhone || '-')}</td></tr>
+                            <tr><th>받는분</th><td>${escapeHtml(d.senderName || '-')}</td></tr>
+                            <tr><th>받는분 연락처</th><td>${escapeHtml(d.senderPhone || '-')}</td></tr>
+                            <tr><th>리본 문구</th><td>${escapeHtml(d.ribbon || '-')}</td></tr>
+                            <tr><th>보내는 분</th><td>${escapeHtml(d.fromName || '-')}</td></tr>
+                            <tr><th>배송지</th><td>${escapeHtml(d.deliveryHall || '-')}${d.deliveryAddr ? '<br>' + escapeHtml(d.deliveryAddr) : ''}</td></tr>
+                            <tr><th>증빙</th><td>${receiptText}</td></tr>
+                        </table>
+                    </div>`;
+            });
+
+            html += `
+                <div class="wreath-total-card">
+                    <strong>합계 (${snapshot.size}건)</strong>
+                    <span class="price"><strong>${totalPrice.toLocaleString()}원</strong></span>
+                </div>`;
+
+            el.innerHTML = html;
+        }
+
+        async function updateWreathStatus(celebrationId, wreathId, newStatus, selectEl) {
+            try {
+                await db.collection(COLLECTION_NAME).doc(celebrationId)
+                    .collection('wreaths').doc(wreathId)
+                    .update({ status: newStatus });
+                selectEl.className = 'status-select status-' + newStatus;
+            } catch (error) {
+                alert('상태 변경에 실패했습니다.');
+                loadWreaths(celebrationId);
+            }
+        }
+
+        async function deleteWreath(celebrationId, wreathId) {
+            if (!confirm('이 화환 접수를 삭제하시겠습니까?')) return;
+            try {
+                await db.collection(COLLECTION_NAME).doc(celebrationId)
+                    .collection('wreaths').doc(wreathId)
+                    .delete();
+                loadWreaths(celebrationId);
+            } catch (error) {
+                alert('삭제에 실패했습니다.');
+            }
+        }
+
+        // ===== 축하 메시지 =====
+        async function loadMessages(celebrationId) {
+            const el = document.getElementById('messageList');
+            el.innerHTML = '<div class="loading">불러오는 중...</div>';
+
+            const snapshot = await db.collection(COLLECTION_NAME).doc(celebrationId)
+                .collection('messages')
+                .orderBy('createdAt', 'desc')
+                .get();
+
+            if (snapshot.empty) {
+                el.innerHTML = '<div class="no-data">등록된 축하 메시지가 없습니다.</div>';
+                return;
+            }
+
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>메시지</th>
+                        <th>등록일</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                const date = d.createdAt ? formatDate(d.createdAt.toDate()) : '-';
+                html += `
+                    <tr>
+                        <td><strong>${escapeHtml(d.name || '-')}</strong></td>
+                        <td>${escapeHtml(d.message || '-')}</td>
+                        <td style="font-size:11px;">${date}</td>
+                        <td><button class="delete-btn" onclick="deleteMessage('${celebrationId}', '${doc.id}')">삭제</button></td>
+                    </tr>`;
+            });
+
+            html += '</tbody></table>';
+            el.innerHTML = html;
+        }
+
+        async function deleteMessage(celebrationId, messageId) {
+            if (!confirm('이 축하 메시지를 삭제하시겠습니까?')) return;
+            try {
+                await db.collection(COLLECTION_NAME).doc(celebrationId)
+                    .collection('messages').doc(messageId)
+                    .delete();
+                loadMessages(celebrationId);
+            } catch (error) {
+                alert('삭제에 실패했습니다.');
+            }
+        }
+
+        async function deleteCelebration(celebrationId) {
+            if (!confirm('이 초대장을 삭제하시겠습니까?\n(화환 접수, 축하 메시지도 모두 삭제됩니다)')) return;
+            try {
+                const wreaths = await db.collection(COLLECTION_NAME).doc(celebrationId).collection('wreaths').get();
+                const messages = await db.collection(COLLECTION_NAME).doc(celebrationId).collection('messages').get();
+                const batch = db.batch();
+                wreaths.forEach(doc => batch.delete(doc.ref));
+                messages.forEach(doc => batch.delete(doc.ref));
+                batch.delete(db.collection(COLLECTION_NAME).doc(celebrationId));
+                await batch.commit();
+                loadCelebrations();
+            } catch (error) {
+                alert('삭제에 실패했습니다.');
+            }
+        }
+
+        // ===== Discord 알림 (옵션) =====
+        const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1457406206602776741/A-dGhbpVt6HzwSNJVguZ1OLf-ngkyO1NkucsW_aE8p4sIa_b_CG93Cbf-FKjDZWf7ZMS';
+
+        async function processNotifications() {
+            try {
+                const snapshot = await db.collection('notifications')
+                    .where('sent', '==', false)
+                    .orderBy('createdAt', 'asc')
+                    .limit(20)
+                    .get();
+
+                for (const doc of snapshot.docs) {
+                    const data = doc.data();
+                    try {
+                        const res = await fetch(DISCORD_WEBHOOK, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: '축하문자무료발송',
+                                embeds: [data.embed]
+                            })
+                        });
+                        if (res.ok || res.status === 204) {
+                            await doc.ref.update({ sent: true });
+                        }
+                    } catch (e) {}
+                }
+            } catch (e) {}
+        }
+
+        setInterval(processNotifications, 30000);
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const h = String(date.getHours()).padStart(2, '0');
+            const min = String(date.getMinutes()).padStart(2, '0');
+            return `${y}-${m}-${d} ${h}:${min}`;
+        }
+    </script>
+</body>
+</html>

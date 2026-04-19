@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ff6b9d">
+    <meta name="description" content="무료 축하 초대장 발송 서비스 - 결혼식, 돌잔치, 회갑, 칠순, 개업 등 간편하게 초대장을 만들어 보내세요">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="축하초대장">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+    <title>축하 초대장 무료 발송</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <span class="logo-icon">🎉</span>
+                    <h1>축하 초대장</h1>
+                </div>
+                <p class="subtitle">무료 축하 초대장 발송 서비스</p>
+            </div>
+        </header>
+
+        <!-- 스텝 인디케이터 -->
+        <div class="step-indicator">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <span>정보 입력</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <span>미리보기</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <span>발송</span>
+            </div>
+        </div>
+
+        <!-- 스텝 1: 정보 입력 -->
+        <section id="step1" class="section active">
+            <!-- 이벤트 종류 선택 -->
+            <div class="card">
+                <h2 class="card-title">어떤 축하 자리인가요? <span class="required">*</span></h2>
+                <p class="card-desc">초대장 종류를 선택해 주세요. 선택에 따라 입력 항목이 달라집니다.</p>
+                <div class="event-type-grid">
+                    <div class="event-type-item selected" data-type="wedding" onclick="selectEventType('wedding')">
+                        <div class="event-type-icon">💍</div>
+                        <div class="event-type-label">결혼식</div>
+                    </div>
+                    <div class="event-type-item" data-type="dol" onclick="selectEventType('dol')">
+                        <div class="event-type-icon">🎂</div>
+                        <div class="event-type-label">돌잔치</div>
+                    </div>
+                    <div class="event-type-item" data-type="hwangap" onclick="selectEventType('hwangap')">
+                        <div class="event-type-icon">🎊</div>
+                        <div class="event-type-label">회갑 (환갑)</div>
+                    </div>
+                    <div class="event-type-item" data-type="chilsun" onclick="selectEventType('chilsun')">
+                        <div class="event-type-icon">🌸</div>
+                        <div class="event-type-label">칠순 (고희)</div>
+                    </div>
+                    <div class="event-type-item" data-type="palsun" onclick="selectEventType('palsun')">
+                        <div class="event-type-icon">🌺</div>
+                        <div class="event-type-label">팔순</div>
+                    </div>
+                    <div class="event-type-item" data-type="opening" onclick="selectEventType('opening')">
+                        <div class="event-type-icon">🎀</div>
+                        <div class="event-type-label">개업·오픈</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주인공 정보 (동적) -->
+            <div class="card">
+                <h2 class="card-title" id="subjectCardTitle">신랑·신부 정보</h2>
+
+                <!-- 결혼식 -->
+                <div id="subjectWedding" class="subject-block">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomName">신랑 성함 <span class="required">*</span></label>
+                            <input type="text" id="groomName" placeholder="예: 김철수">
+                        </div>
+                        <div class="form-group">
+                            <label for="brideName">신부 성함 <span class="required">*</span></label>
+                            <input type="text" id="brideName" placeholder="예: 이영희">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomParents">신랑측 혼주</label>
+                            <input type="text" id="groomParents" placeholder="예: 김영수 · 박미선 (선택)">
+                        </div>
+                        <div class="form-group">
+                            <label for="brideParents">신부측 혼주</label>
+                            <input type="text" id="brideParents" placeholder="예: 이대호 · 최수정 (선택)">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="groomRelation">신랑 관계</label>
+                            <select id="groomRelation" onchange="toggleCustomRelation(this, 'groomRelationCustom')">
+                                <option value="장남">장남</option>
+                                <option value="차남">차남</option>
+                                <option value="삼남">삼남</option>
+                                <option value="아들">아들</option>
+                                <option value="">선택안함</option>
+                                <option value="__custom__">직접입력</option>
+                            </select>
+                            <input type="text" id="groomRelationCustom" placeholder="신랑 관계를 직접 입력하세요" style="display:none; margin-top:6px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="brideRelation">신부 관계</label>
+                            <select id="brideRelation" onchange="toggleCustomRelation(this, 'brideRelationCustom')">
+                                <option value="장녀">장녀</option>
+                                <option value="차녀">차녀</option>
+                                <option value="삼녀">삼녀</option>
+                                <option value="딸">딸</option>
+                                <option value="">선택안함</option>
+                                <option value="__custom__">직접입력</option>
+                            </select>
+                            <input type="text" id="brideRelationCustom" placeholder="신부 관계를 직접 입력하세요" style="display:none; margin-top:6px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 돌잔치 -->
+                <div id="subjectDol" class="subject-block" style="display:none;">
+                    <div class="form-group">
+                        <label for="babyName">아기 성함 <span class="required">*</span></label>
+                        <input type="text" id="babyName" placeholder="예: 김하준">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="babyBirth">생년월일</label>
+                            <input type="date" id="babyBirth">
+                        </div>
+                        <div class="form-group">
+                            <label for="babyGender">성별</label>
+                            <select id="babyGender">
+                                <option value="">선택</option>
+                                <option value="아들">아들</option>
+                                <option value="딸">딸</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dolFather">아버지 성함</label>
+                            <input type="text" id="dolFather" placeholder="예: 김철수 (선택)">
+                        </div>
+                        <div class="form-group">
+                            <label for="dolMother">어머니 성함</label>
+                            <input type="text" id="dolMother" placeholder="예: 이영희 (선택)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 회갑/칠순/팔순 -->
+                <div id="subjectElder" class="subject-block" style="display:none;">
+                    <div class="form-group">
+                        <label for="elderName">주인공 성함 <span class="required">*</span></label>
+                        <input type="text" id="elderName" placeholder="예: 홍길동">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="elderAge">연세</label>
+                            <input type="text" id="elderAge" placeholder="예: 60 (선택)">
+                        </div>
+                        <div class="form-group">
+                            <label for="elderGender">성별</label>
+                            <select id="elderGender">
+                                <option value="">선택</option>
+                                <option value="아버지">아버지</option>
+                                <option value="어머니">어머니</option>
+                                <option value="할아버지">할아버지</option>
+                                <option value="할머니">할머니</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="elderHosts">자녀 (모시는 분)</label>
+                        <textarea id="elderHosts" rows="2" placeholder="예: 장남 홍철수, 장녀 홍영희, 차남 홍민수 (선택)"></textarea>
+                    </div>
+                </div>
+
+                <!-- 개업 -->
+                <div id="subjectOpening" class="subject-block" style="display:none;">
+                    <div class="form-group">
+                        <label for="shopName">상호명 <span class="required">*</span></label>
+                        <input type="text" id="shopName" placeholder="예: 행복한 베이커리">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="shopCeo">대표자 성함</label>
+                            <input type="text" id="shopCeo" placeholder="예: 홍길동 (선택)">
+                        </div>
+                        <div class="form-group">
+                            <label for="shopType">업종·업태</label>
+                            <input type="text" id="shopType" placeholder="예: 카페 (선택)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 행사 정보 -->
+            <div class="card">
+                <h2 class="card-title" id="venueCardTitle">예식 정보</h2>
+                <div class="form-group">
+                    <label for="venueName" id="venueNameLabel">예식장 <span class="required">*</span></label>
+                    <input type="text" id="venueName" placeholder="예: 더 채플 앳 청담">
+                </div>
+                <div class="form-group">
+                    <label for="venueRoom" id="venueRoomLabel">홀·층</label>
+                    <input type="text" id="venueRoom" placeholder="예: 2층 그랜드홀 (선택)">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate" id="eventDateLabel">예식 날짜 <span class="required">*</span></label>
+                        <input type="date" id="eventDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime" id="eventTimeLabel">예식 시간</label>
+                        <input type="time" id="eventTime" value="11:00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="venueAddress" id="venueAddressLabel">예식장 주소 (입력 시 지도 길찾기 기능이 활성화됩니다.)</label>
+                    <input type="text" id="venueAddress" placeholder="예: 서울시 강남구 청담동 1-1 (선택)">
+                </div>
+                <div class="form-group">
+                    <label for="venuePhone" id="venuePhoneLabel">예식장 연락처</label>
+                    <input type="tel" id="venuePhone" placeholder="예: 02-1234-5678 (선택)">
+                </div>
+                <div class="form-group" id="afterPartyGroup">
+                    <label for="afterParty">피로연 장소</label>
+                    <input type="text" id="afterParty" placeholder="예: 1층 연회장 (선택)">
+                </div>
+            </div>
+
+            <!-- 추가 설정 -->
+            <div class="card">
+                <h2 class="card-title">추가 설정</h2>
+                <div class="form-group">
+                    <label for="messageStyle">문자 스타일</label>
+                    <select id="messageStyle">
+                        <option value="formal">격식체 (공식적)</option>
+                        <option value="semi" selected>반격식체 (따뜻한)</option>
+                        <option value="simple">간결체 (심플)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="additionalMessage">인사말 / 추가 메시지</label>
+                    <textarea id="additionalMessage" rows="4" placeholder="예: 두 사람의 소중한 시작을 함께 축복해 주세요 (선택)"></textarea>
+                </div>
+            </div>
+
+            <!-- 축의금 계좌 -->
+            <div class="card">
+                <h2 class="card-title" id="accountCardTitle">마음 전하는 곳 <span style="font-size:12px; font-weight:400; color:var(--text-muted);">(선택사항)</span></h2>
+                <p class="card-desc" id="accountCardDesc">축의금·축하금을 보내실 분들을 위한 계좌 정보입니다.</p>
+                <div id="accountList">
+                    <div class="account-item">
+                        <div class="form-group account-relation-group">
+                            <label>관계</label>
+                            <select class="accountRelation" onchange="toggleAccountRelationCustom(this)"></select>
+                            <input type="text" class="accountRelationCustom" placeholder="관계를 직접 입력하세요" style="display:none; margin-top:6px;">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>은행</label>
+                                <select class="accountBank">
+                                    <option value="">선택</option>
+                                    <option value="국민은행">국민은행</option>
+                                    <option value="신한은행">신한은행</option>
+                                    <option value="하나은행">하나은행</option>
+                                    <option value="우리은행">우리은행</option>
+                                    <option value="NH농협">NH농협</option>
+                                    <option value="IBK기업">IBK기업</option>
+                                    <option value="카카오뱅크">카카오뱅크</option>
+                                    <option value="토스뱅크">토스뱅크</option>
+                                    <option value="케이뱅크">케이뱅크</option>
+                                    <option value="SC제일">SC제일</option>
+                                    <option value="대구은행">대구은행</option>
+                                    <option value="부산은행">부산은행</option>
+                                    <option value="광주은행">광주은행</option>
+                                    <option value="경남은행">경남은행</option>
+                                    <option value="전북은행">전북은행</option>
+                                    <option value="제주은행">제주은행</option>
+                                    <option value="수협은행">수협은행</option>
+                                    <option value="우체국">우체국</option>
+                                    <option value="새마을금고">새마을금고</option>
+                                    <option value="신협">신협</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>예금주</label>
+                                <input type="text" class="accountHolder" placeholder="예: 김철수 (선택)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>계좌번호</label>
+                            <input type="text" class="accountNumber" placeholder="예: 123-456-789012 (선택)">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-add" onclick="addAccount()">
+                    + 계좌 추가
+                </button>
+            </div>
+
+            <button class="btn-primary" onclick="goToStep(2)">미리보기 →</button>
+            <button class="btn-reply" onclick="openReplyModal()">감사장 보내기</button>
+            <a href="http://pf.kakao.com/_IvrCX/chat" target="_blank" class="btn-cs">고객센터 카카오톡 문의하기</a>
+        </section>
+
+        <!-- 스텝 2: 미리보기 -->
+        <section id="step2" class="section">
+            <div class="card preview-card">
+                <div class="preview-header">
+                    <div id="previewEventIcon" style="font-size:44px; margin-bottom:4px;">🎉</div>
+                    <h2 id="previewEventTitle">초 대 장</h2>
+                    <div class="preview-divider"></div>
+                </div>
+                <div id="previewContent" class="preview-content"></div>
+                <div class="preview-footer">
+                    <div class="preview-divider"></div>
+                    <p class="preview-condolence" id="previewClosing">행복한 순간에 함께해 주세요</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">문자 메시지 미리보기</h2>
+                <div class="sms-preview">
+                    <div id="smsPreview" class="sms-bubble"></div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="goToStep(1)">← 수정하기</button>
+                <button class="btn-primary" onclick="goToStep(3)">발송하기 →</button>
+            </div>
+        </section>
+
+        <!-- 스텝 3: 발송 -->
+        <section id="step3" class="section">
+            <div class="card">
+                <h2 class="card-title">축하 초대장 발송</h2>
+                <p class="card-desc">아래 방법으로 기쁜 소식을 전달하세요.</p>
+
+                <div class="share-buttons">
+                    <button class="share-btn kakao" onclick="shareKakao()">
+                        <span class="share-icon">💬</span>
+                        <span>카카오톡 공유</span>
+                    </button>
+                    <button class="share-btn sms" onclick="shareSMS()">
+                        <span class="share-icon">📱</span>
+                        <span>SMS 문자 보내기</span>
+                    </button>
+                    <button class="share-btn copy" onclick="copyMessage()">
+                        <span class="share-icon">📋</span>
+                        <span>문자 내용 복사</span>
+                    </button>
+                    <button class="share-btn link" onclick="shareLink()">
+                        <span class="share-icon">🔗</span>
+                        <span>링크 공유</span>
+                    </button>
+                    <button class="share-btn native" onclick="shareNative()" id="nativeShareBtn" style="display:none;">
+                        <span class="share-icon">📤</span>
+                        <span>공유하기</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">초대장 페이지 공유</h2>
+                <p class="card-desc">아래 QR코드를 스캔하거나 링크를 공유하세요.</p>
+                <div id="qrCode" class="qr-container"></div>
+                <div class="link-copy-box">
+                    <input type="text" id="shareUrl" readonly>
+                    <button onclick="copyLink()">복사</button>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="goToStep(2)">← 미리보기</button>
+                <button class="btn-outline" onclick="resetForm()">새로 작성</button>
+            </div>
+        </section>
+
+        <!-- 초대장 페이지 (공유용) -->
+        <section id="funeralPage" class="section funeral-page" style="display:none;">
+            <div class="funeral-page-content">
+                <div class="fp-header">
+                    <div class="fp-flower-top" id="fpEventIcon">🎉</div>
+                    <h1 class="fp-title" id="fpTitle">초 대 장</h1>
+                    <div class="fp-line"></div>
+                </div>
+                <div id="fpBody" class="fp-body"></div>
+                <div class="fp-footer">
+                    <div class="fp-line"></div>
+                    <p class="fp-condolence" id="fpClosing">행복한 순간에 함께해 주세요</p>
+                </div>
+                <div class="fp-map" id="fpMap"></div>
+                <div id="fpNavBtns" class="fp-nav-btns" style="display:none;">
+                    <button class="btn-primary fp-nav-btn kakao-nav" id="fpNavBtnKakao">
+                        📍 카카오맵으로 길찾기
+                    </button>
+                    <button class="btn-primary fp-nav-btn naver-nav" id="fpNavBtnNaver">
+                        📍 네이버지도로 길찾기
+                    </button>
+                </div>
+
+                <!-- 축하화환 마음 보내기 -->
+                <div class="fp-section" id="fpWreathSection" style="display:none;">
+                    <h3 class="fp-section-title" id="fpWreathTitle">축하화환 마음 전하기</h3>
+                    <p class="fp-section-desc">마음을 담아 화환을 보내보세요.<br>화환을 보내시면 초대장에 리본 문구가 노출됩니다.</p>
+                    <button class="btn-primary fp-wreath-open-btn" onclick="openWreathModal()">축하화환 보내기 (현장 직송-자동주문 시스템)</button>
+
+                    <div id="fpWreathSenderList" class="fp-wreath-sender-section"></div>
+                </div>
+
+                <!-- 축하 메시지 -->
+                <div class="fp-section" id="fpCondolenceSection" style="display:none;">
+                    <h3 class="fp-section-title">축하 메시지</h3>
+                    <div id="fpCondolenceList" class="fp-condolence-list"></div>
+                    <div class="fp-condolence-input">
+                        <input type="text" id="fpCondolenceName" placeholder="이름" maxlength="20">
+                        <textarea id="fpCondolenceMsg" rows="2" placeholder="축하 메시지를 남겨주세요" maxlength="200"></textarea>
+                        <button class="btn-primary fp-condolence-submit" onclick="submitCondolence()">메시지 남기기</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 화환 접수 모달 -->
+        <div id="wreathModal" class="wreath-modal" style="display:none;">
+            <div class="wreath-modal-content">
+                <div class="wreath-modal-header">
+                    <h3 id="wreathModalTitle">축하화환 접수 (상품을 클릭하시면 주문창으로 이동합니다.)</h3>
+                    <button class="wreath-modal-close" onclick="closeWreathModal()">&times;</button>
+                </div>
+                <div class="wreath-modal-body">
+                    <div class="wreath-grid">
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 3단 화환', 99000)">
+                            <img src="images/축하 3단 화환.jpg" alt="축하 3단 화환">
+                            <span>축하 3단 화환</span>
+                            <span class="wreath-price">99,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 고급 3단 화환', 119000)">
+                            <img src="images/축하 고급 3단 화환.jpg" alt="축하 고급 3단 화환">
+                            <span>축하 고급 3단 화환</span>
+                            <span class="wreath-price">119,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 특대 3단 화환', 139000)">
+                            <img src="images/축하 특대 3단 화환.jpg" alt="축하 특대 3단 화환">
+                            <span>축하 특대 3단 화환</span>
+                            <span class="wreath-price">139,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 특특대 3단 화환', 159000)">
+                            <img src="images/축하 특특대 3단 화환.jpg" alt="축하 특특대 3단 화환">
+                            <span>축하 특특대 3단 화환</span>
+                            <span class="wreath-price">159,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 4단 화환', 179000)">
+                            <img src="images/축하 4단 화환 2.jpg" alt="축하 4단 화환">
+                            <span>축하 4단 화환</span>
+                            <span class="wreath-price">179,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 하트장미 꽃다발', 139000)">
+                            <img src="images/축하 하트장미 꽃다발.jpg" alt="축하 하트장미 꽃다발">
+                            <span>축하 하트장미 꽃다발</span>
+                            <span class="wreath-price">139,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 레드장미&카네이션 바구니', 150000)">
+                            <img src="images/축하 레드장미&카네이션 바구니.jpg" alt="축하 레드장미&카네이션 바구니">
+                            <span>축하 레드장미&amp;카네이션 바구니</span>
+                            <span class="wreath-price">150,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 서양란', 130000)">
+                            <img src="images/축하 서양란.jpg" alt="축하 서양란">
+                            <span>축하 서양란</span>
+                            <span class="wreath-price">130,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 쌀화환', 189000)">
+                            <img src="images/축하 쌀화환.jpg" alt="축하 쌀화환">
+                            <span>축하 쌀화환</span>
+                            <span class="wreath-price">189,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 오브제 1단', 119000)">
+                            <img src="images/축하 오브제 1단.jpg" alt="축하 오브제 1단">
+                            <span>축하 오브제 1단</span>
+                            <span class="wreath-price">119,000원</span>
+                        </div>
+                        <div class="wreath-item" onclick="selectWreath(this, '축하 오브제 2단', 140000)">
+                            <img src="images/축하 오브제 2단.jpg" alt="축하 오브제 2단">
+                            <span>축하 오브제 2단</span>
+                            <span class="wreath-price">140,000원</span>
+                        </div>
+                    </div>
+
+                    <div id="wreathForm" class="wreath-form" style="display:none;">
+                        <div class="wreath-selected-info" id="wreathSelectedInfo"></div>
+
+                        <!-- 1. 주문자 정보 -->
+                        <div class="wreath-section-title">주문자 정보 (선택)</div>
+                        <div class="form-group">
+                            <label>주문자 성함 (입금자명) <span class="required">*</span></label>
+                            <input type="text" id="wreathOrderName" placeholder="주문자 성함 (입금자명)">
+                        </div>
+                        <div class="form-group">
+                            <label>휴대전화번호 (도착완료사진 받을 연락처)</label>
+                            <input type="tel" id="wreathOrderPhone" placeholder="예: 010-1234-5678 (선택)">
+                        </div>
+
+                        <!-- 2. 배송지 정보 -->
+                        <div class="wreath-section-title">배송지 정보</div>
+                        <div class="form-group">
+                            <label>행사 장소</label>
+                            <input type="text" id="wreathDeliveryHall" readonly style="background:#fff1f5; cursor:default;">
+                        </div>
+                        <div class="form-group">
+                            <label>주소</label>
+                            <input type="text" id="wreathDeliveryAddr" readonly style="background:#fff1f5; cursor:default;">
+                        </div>
+
+                        <!-- 3. 받는 분 정보 -->
+                        <div class="wreath-section-title">받는 분 정보 (주인공 또는 혼주명)</div>
+                        <div class="form-group">
+                            <label>받는분 성함 <span class="required">*</span></label>
+                            <input type="text" id="wreathSenderName" placeholder="예: 김철수">
+                        </div>
+                        <div class="form-group">
+                            <label>휴대전화번호 <span class="required">*</span></label>
+                            <input type="tel" id="wreathSenderPhone" placeholder="예: 010-1234-5678">
+                        </div>
+
+                        <!-- 4. 리본 문구 -->
+                        <div class="wreath-section-title">리본 문구</div>
+                        <div class="form-group">
+                            <label>경축 문구 (직접입력 또는 문구추천)</label>
+                            <div class="ribbon-suggest-row">
+                                <input type="text" id="wreathRibbonTop" placeholder="경축 문구를 직접 입력하세요">
+                                <button type="button" class="ribbon-suggest-btn" onclick="toggleRibbonSuggest()">경축 문구 추천</button>
+                            </div>
+                            <div id="ribbonSuggestList" class="ribbon-suggest-list" style="display:none;">
+                                <div class="ribbon-option" onclick="selectRibbon('祝 結婚 (축 결혼)')">祝 結婚 (축 결혼)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 華婚 (축 화혼)')">祝 華婚 (축 화혼)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 聖婚 (축 성혼)')">祝 聖婚 (축 성혼)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 回甲 (축 회갑)')">祝 回甲 (축 회갑)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 古稀 (축 고희)')">祝 古稀 (축 고희)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 米壽 (축 미수)')">祝 米壽 (축 미수)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 開業 (축 개업)')">祝 開業 (축 개업)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 發展 (축 발전)')">祝 發展 (축 발전)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('祝 盛業 (축 성업)')">祝 盛業 (축 성업)</div>
+                                <div class="ribbon-option" onclick="selectRibbon('축하드립니다')">축하드립니다</div>
+                                <div class="ribbon-option" onclick="selectRibbon('진심으로 축하드립니다')">진심으로 축하드립니다</div>
+                                <div class="ribbon-option ribbon-option-custom" onclick="ribbonDirectInput()">✏️ 직접입력</div>
+                            </div>
+                        </div>
+
+                        <!-- 보내는 분 -->
+                        <div class="form-group">
+                            <label>보내는 분 (성함 또는 단체명) <span class="required">*</span></label>
+                            <input type="text" id="wreathFromName" placeholder="예: 홍길동 / (주)대한상사">
+                        </div>
+
+                        <!-- 결제 금액 -->
+                        <div class="wreath-section-title">결제 정보</div>
+                        <div class="wreath-payment-amount" id="wreathPaymentAmount"></div>
+                        <div class="wreath-bank-info">
+                            <strong>무통장 입금</strong><br>
+                            하나은행 1029-7150-406937 진원
+                            <button type="button" class="bank-copy-btn" onclick="copyToClipboard('하나은행 1029-7150-406937 진원'); showToast('계좌정보가 복사되었습니다');">복사하기</button>
+                        </div>
+
+                        <!-- 증빙서류 -->
+                        <div class="wreath-section-title">증빙서류 신청</div>
+                        <div class="receipt-options">
+                            <label class="receipt-radio"><input type="radio" name="receipt" value="none" checked onchange="toggleReceipt('none')"> 신청안함</label>
+                            <label class="receipt-radio"><input type="radio" name="receipt" value="cash" onchange="toggleReceipt('cash')"> 현금영수증</label>
+                            <label class="receipt-radio"><input type="radio" name="receipt" value="tax" onchange="toggleReceipt('tax')"> 세금계산서</label>
+                        </div>
+                        <div id="receiptCash" style="display:none;">
+                            <div class="form-group">
+                                <label>휴대폰 번호</label>
+                                <input type="tel" id="receiptPhone" placeholder="예: 010-1234-5678">
+                            </div>
+                        </div>
+                        <div id="receiptTax" style="display:none;">
+                            <div class="form-group">
+                                <label>이메일 주소</label>
+                                <input type="email" id="taxEmail" placeholder="예: example@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>상호</label>
+                                <input type="text" id="taxCompany" placeholder="상호명">
+                            </div>
+                            <div class="form-group">
+                                <label>대표자명</label>
+                                <input type="text" id="taxCeo" placeholder="대표자명">
+                            </div>
+                            <div class="form-group">
+                                <label>사업자번호</label>
+                                <input type="text" id="taxBizNo" placeholder="예: 123-45-67890">
+                            </div>
+                            <div class="form-group">
+                                <label>사업장 소재지</label>
+                                <input type="text" id="taxAddr" placeholder="사업장 주소">
+                            </div>
+                            <div class="form-group">
+                                <label>업태</label>
+                                <input type="text" id="taxBizType" placeholder="업태">
+                            </div>
+                            <div class="form-group">
+                                <label>종목</label>
+                                <input type="text" id="taxBizItem" placeholder="종목">
+                            </div>
+                        </div>
+
+                        <!-- 주의사항 -->
+                        <div class="wreath-section-title">주의사항</div>
+                        <div class="wreath-notice">
+                            <ul>
+                                <li>평일 오후 6시 이후 주문건은 평일 기준 익일 오전 중으로 배송됩니다. (주말은 익일 오후 전후로 배송됩니다.)</li>
+                                <li>주문자명과 입금자명을 동일하게 입금해주세요.</li>
+                                <li>주문 제작을 원칙으로 해서 입금 확인 후 2~4시간 이내 배송됩니다.</li>
+                                <li>배송 완료 후 사진을 문자로 전송해 드립니다.</li>
+                            </ul>
+                        </div>
+
+                        <!-- 개인정보 동의 -->
+                        <label class="agree-check">
+                            <input type="checkbox" id="wreathAgree">
+                            <span>개인정보 수집 및 이용에 동의합니다</span>
+                        </label>
+
+                        <!-- 주문하기 -->
+                        <button class="btn-primary wreath-order-btn" onclick="submitWreath()">주문하기</button>
+                        <a href="http://pf.kakao.com/_IvrCX/chat" target="_blank" class="btn-cs">고객센터 카카오톡 문의하기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 감사장 모달 -->
+        <div id="replyModal" class="wreath-modal" style="display:none;">
+            <div class="wreath-modal-content">
+                <div class="wreath-modal-header">
+                    <h3>감사장 보내기</h3>
+                    <button class="wreath-modal-close" onclick="closeReplyModal()">&times;</button>
+                </div>
+                <div class="wreath-modal-body">
+                    <div class="wreath-section-title">감사장 양식 선택</div>
+
+                    <div class="reply-options">
+                        <div class="reply-option" onclick="selectReply(this, 'wedding')">
+                            <div class="reply-option-title">1. 결혼식 감사장</div>
+                            <div class="reply-option-preview">따뜻한 마음으로 저희 두 사람의 결혼을 축복해 주신...</div>
+                        </div>
+                        <div class="reply-option" onclick="selectReply(this, 'dol')">
+                            <div class="reply-option-title">2. 돌잔치 감사장</div>
+                            <div class="reply-option-preview">바쁘신 중에도 우리 아이의 첫 생일을 축하해 주신...</div>
+                        </div>
+                        <div class="reply-option" onclick="selectReply(this, 'elder')">
+                            <div class="reply-option-title">3. 회갑·칠순 감사장</div>
+                            <div class="reply-option-preview">귀한 걸음으로 어르신의 뜻깊은 자리를 빛내 주신...</div>
+                        </div>
+                        <div class="reply-option" onclick="selectReply(this, 'opening')">
+                            <div class="reply-option-title">4. 개업 감사장</div>
+                            <div class="reply-option-preview">저희의 새로운 시작을 축하해 주신 모든 분께...</div>
+                        </div>
+                    </div>
+
+                    <div id="replyPreview" class="reply-preview-box" style="display:none;">
+                        <div class="wreath-section-title">감사장 미리보기 <span style="font-size:11px; font-weight:400; color:#b86a8a;">(미리보기 화면에서 수정 후 발송하실 수 있습니다.)</span></div>
+                        <textarea id="replyPreviewText" class="reply-preview-text reply-editable" rows="10" oninput="selectedReplyText = this.value;"></textarea>
+                    </div>
+
+                    <div id="replyShareBtns" class="reply-share-btns" style="display:none;">
+                        <div class="wreath-section-title">감사장 발송</div>
+                        <div class="share-buttons">
+                            <button class="share-btn kakao" onclick="shareReplyKakao()">
+                                <span class="share-icon">💬</span>
+                                <span>카카오톡 공유</span>
+                            </button>
+                            <button class="share-btn sms" onclick="shareReplySMS()">
+                                <span class="share-icon">📱</span>
+                                <span>SMS 문자 보내기</span>
+                            </button>
+                            <button class="share-btn copy" onclick="copyReplyMessage()">
+                                <span class="share-icon">📋</span>
+                                <span>문자 내용 복사</span>
+                            </button>
+                            <button class="share-btn link" onclick="shareReplyLink()">
+                                <span class="share-icon">🔗</span>
+                                <span>링크 공유</span>
+                            </button>
+                            <button class="share-btn native" onclick="shareReplyNative()" id="replyNativeShareBtn" style="display:none;">
+                                <span class="share-icon">📤</span>
+                                <span>공유하기</span>
+                            </button>
+                        </div>
+                        <div class="wreath-section-title">QR코드</div>
+                        <div id="replyQrCode" class="qr-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 토스트 메시지 -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <footer class="site-footer">
+        <p>축하문자무료발송</p>
+        <div class="site-biz-info">
+            상호: 효시스템 부천직영점 | 대표: 이주영<br>
+            사업자등록번호: 290-62-00902<br>
+            주소: 경기도 부천시 원미구 송내대로265번길 23, 201-G11
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
