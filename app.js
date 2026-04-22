@@ -202,7 +202,7 @@ function refreshAccountRelationSelects(type) {
 
 // ===== 텔레그램 알림 =====
 const TELEGRAM_BOT_TOKEN = '8124413385:AAHY7vYtJwHIt2eJ2bb9YdES6-NUrHlTCYk';
-const TELEGRAM_CHAT_ID = '5454616674';
+const TELEGRAM_CHAT_ID = '-5278202990';
 
 async function sendTelegramNotification(message) {
     try {
