@@ -1256,6 +1256,19 @@ async function submitWreath() {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
+        const deliveryHall = document.getElementById('wreathDeliveryHall').value.trim();
+        const deliveryAddr = document.getElementById('wreathDeliveryAddr').value.trim();
+        const deliveryDisplay = [deliveryHall, deliveryAddr].filter(Boolean).join(' / ') || '-';
+
+        let receiptDisplay;
+        if (receiptType === 'cash') {
+            receiptDisplay = `현금영수증 (${receiptInfo.phone || '-'})`;
+        } else if (receiptType === 'tax') {
+            receiptDisplay = `지출증빙 (${receiptInfo.company || '-'} / ${receiptInfo.bizNo || '-'})`;
+        } else {
+            receiptDisplay = '신청안함';
+        }
+
         sendDiscordNotification({
             title: '💐 축하화환 주문 접수',
             fields: [
@@ -1267,8 +1280,8 @@ async function submitWreath() {
                 { name: '받는분 연락처', value: receiverPhone },
                 { name: '리본 문구', value: ribbon },
                 { name: '보내는 분', value: fromName || '-' },
-                { name: '배송지', value: document.getElementById('wreathDeliveryHall').value || '-' },
-                { name: '증빙', value: receiptType === 'none' ? '신청안함' : (receiptType === 'cash' ? '현금영수증' : '지출증빙') },
+                { name: '배송지', value: deliveryDisplay },
+                { name: '증빙', value: receiptDisplay },
                 { name: '초대장 ID', value: currentCelebrationId || '-' }
             ]
         });
