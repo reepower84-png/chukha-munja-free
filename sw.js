@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chukha-v2';
+const CACHE_NAME = 'chukha-v3';
 const ASSETS = [
     './',
     './index.html',
